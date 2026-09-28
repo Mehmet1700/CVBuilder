@@ -1,0 +1,15 @@
+node_modules/
+dist/
+.env
+*.pdf
+
+# Personal application data (contains your CV/cover-letter content)
+backend/data/profiles/cv/*.json
+backend/data/profiles/cover-letter/*.json
+backend/data/applications.json
+!backend/data/profiles/cv/.gitkeep
+!backend/data/profiles/cover-letter/.gitkeep
+
+exports/
+.DS_Store
+.claude/settings.local.json

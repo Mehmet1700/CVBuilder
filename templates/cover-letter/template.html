@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<title>{{name}} - Cover Letter</title>
+<style>{{{css}}}</style>
+</head>
+<body>
+  <header class="cl-header">
+    <h1>{{name}}</h1>
+    <p class="contact-line">
+      {{#if email}}{{email}}{{/if}}{{#if phone}} · {{phone}}{{/if}}{{#if location}} · {{location}}{{/if}}{{#if linkedin}} · {{linkedin}}{{/if}}
+    </p>
+  </header>
+
+  <div class="cl-body">
+    <p class="date">{{date}}</p>
+
+    <div class="address-block">
+      {{#if company}}<p class="company-name">{{company}}</p>{{/if}}
+      {{#if companyAddress}}<p>{{companyAddress}}</p>{{/if}}
+    </div>
+
+    {{#if position}}
+    <p class="subject">Application for {{position}}</p>
+    {{/if}}
+
+    <p class="salutation">{{#if hiringManager}}Dear {{hiringManager}},{{else}}Dear Hiring Manager,{{/if}}</p>
+
+    {{#if opening_paragraph}}<p class="paragraph">{{opening_paragraph}}</p>{{/if}}
+    {{#if body_paragraph}}<p class="paragraph">{{body_paragraph}}</p>{{/if}}
+    {{#if closing_paragraph}}<p class="paragraph">{{closing_paragraph}}</p>{{/if}}
+
+    <div class="signature">
+      <p>Sincerely,</p>
+      <p class="sign-name">{{name}}</p>
+    </div>
+  </div>
+</body>
+</html>

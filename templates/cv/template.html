@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<title>{{name}} - CV</title>
+<style>{{{css}}}</style>
+</head>
+<body>
+  <header class="header">
+    {{#if photo}}<img class="photo" src="{{photo}}" alt="{{name}}" />{{/if}}
+    <div class="header-text">
+      <h1>{{name}}</h1>
+      {{#if title}}<p class="title">{{title}}</p>{{/if}}
+    </div>
+  </header>
+
+  <div class="content">
+    <aside class="sidebar">
+      <section class="block">
+        <h2>Contact</h2>
+        <ul class="contact-list">
+          {{#if email}}<li>{{email}}</li>{{/if}}
+          {{#if phone}}<li>{{phone}}</li>{{/if}}
+          {{#if location}}<li>{{location}}</li>{{/if}}
+          {{#if linkedin}}<li>{{linkedin}}</li>{{/if}}
+          {{#if github}}<li>{{github}}</li>{{/if}}
+        </ul>
+      </section>
+
+      {{#if skills}}
+      <section class="block">
+        <h2>Skills</h2>
+        {{#each skills}}
+        <div class="skill-group">
+          <h3>{{category}}</h3>
+          <p>{{join items ", "}}</p>
+        </div>
+        {{/each}}
+      </section>
+      {{/if}}
+
+      {{#if languages}}
+      <section class="block">
+        <h2>Languages</h2>
+        <ul class="languages-list">
+          {{#each languages}}
+          <li><span class="lang-name">{{name}}</span><span class="lang-level">{{level}}</span></li>
+          {{/each}}
+        </ul>
+      </section>
+      {{/if}}
+
+      {{#if education}}
+      <section class="block">
+        <h2>Education</h2>
+        {{#each education}}
+        <div class="edu-entry">
+          <h3>{{degree}}</h3>
+          <p class="institution">{{institution}}{{#if location}}, {{location}}{{/if}}</p>
+          <p class="meta">{{startDate}} – {{endDate}}</p>
+        </div>
+        {{/each}}
+      </section>
+      {{/if}}
+    </aside>
+
+    <main class="main">
+      {{#if summary}}
+      <section class="block">
+        <h2>Summary</h2>
+        <p class="summary">{{summary}}</p>
+      </section>
+      {{/if}}
+
+      {{#if experience}}
+      <section class="block">
+        <h2>Experience</h2>
+        {{#each experience}}
+        <div class="exp-entry">
+          <div class="exp-header">
+            <h3>{{role}}</h3>
+            <span class="meta">{{startDate}} – {{endDate}}</span>
+          </div>
+          <p class="company">{{company}}{{#if location}}, {{location}}{{/if}}</p>
+          {{#if bullets}}
+          <ul>
+            {{#each bullets}}<li>{{this}}</li>{{/each}}
+          </ul>
+          {{/if}}
+        </div>
+        {{/each}}
+      </section>
+      {{/if}}
+    </main>
+  </div>
+</body>
+</html>
