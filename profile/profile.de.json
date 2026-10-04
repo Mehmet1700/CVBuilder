@@ -4,23 +4,47 @@
   "email": "mehmet.karaca.application@gmail.com",
   "phone": "",
   "location": "Lissabon, Portugal",
-  "linkedin": "",
+  "linkedin": "linkedin.com/in/karaca-mehmet",
   "github": "github.com/Mehmet1700",
   "photo": "./profile/photo.jpg",
   "summary": "",
   "skills": [
-    { "category": "Programmierung", "items": ["Python", "SQL", "R"] },
-    { "category": "ML/KI", "items": ["scikit-learn", "TensorFlow", "PyTorch"] },
-    { "category": "Tools", "items": ["Docker", "Git", "Spark"] }
+    { "category": "Programmierung", "items": ["Python", "SQL", "R", "Java", "JavaScript"] },
+    { "category": "ML/KI", "items": ["scikit-learn", "TensorFlow", "PyTorch", "Azure ML", "Computer Vision", "LLMs"] },
+    { "category": "Daten & Tools", "items": ["Pandas", "Apache Spark", "Apache Hadoop", "Power BI", "Docker", "Git", "n8n"] },
+    { "category": "Web & Cloud", "items": ["React.js", "Node.js", "Microsoft Azure", "Power Apps"] }
   ],
   "experience": [
     {
-      "title": "",
-      "company": "",
-      "location": "",
-      "startDate": "",
-      "endDate": "",
-      "bullets": ["", "", ""]
+      "title": "Werkstudent Strategie & Innovation",
+      "company": "Deutsche Bundesbank",
+      "location": "Frankfurt am Main",
+      "startDate": "08/2026",
+      "endDate": "heute",
+      "bullets": []
+    },
+    {
+      "title": "Dualer Student Wirtschaftsinformatik (Data Science)",
+      "company": "TRUMPF SE + Co. KG",
+      "location": "Ditzingen",
+      "startDate": "09/2022",
+      "endDate": "09/2025",
+      "bullets": [
+        "Machine Learning zur Optimierung energiesparender Abschaltprozesse bei Werkzeugmaschinen eingesetzt",
+        "Computer-Vision-Algorithmen zur Optimierung von Laserschneidparametern aus Bilddaten entwickelt",
+        "Im Smart Factory Consulting zu hochautomatisierten Produktionsumgebungen beraten"
+      ]
+    },
+    {
+      "title": "Dualer Student Betriebswirtschaftslehre (Finanzdienstleistung)",
+      "company": "w&w Gruppe",
+      "location": "Ludwigsburg",
+      "startDate": "10/2019",
+      "endDate": "09/2022",
+      "bullets": [
+        "Entscheidungsvorlagen und Präsentationen für den Vorstand erstellt",
+        "Daten in den Projekten Data Lake und Fund Decomposition analysiert und verarbeitet"
+      ]
     }
   ],
   "projects": [
@@ -32,18 +56,52 @@
       "bullets": ["", ""]
     }
   ],
+  "publications": [
+    {
+      "title": "Effects of design decisions on sustainability in product development: a case study for machine tools",
+      "venue": "Proceedings of the Design Society, Volume 6 (DESIGN 2026), Cambridge University Press",
+      "date": "07/2026",
+      "link": "",
+      "bullets": []
+    },
+    {
+      "title": "Leveraging LLM and GAN for Synthetic Data Generation: A Novel Architecture for Market Research",
+      "venue": "EU4Dual Annual Conference 2025, Abstract Book",
+      "date": "04/2025",
+      "link": "",
+      "bullets": [
+        "Architektur mit zwei LLMs entwickelt, die Kunden-Personas erzeugt und deren Präferenzen ableitet",
+        "CTGAN-Modell auf den synthetischen Daten trainiert, um Marktforschungsdatensätze zu erzeugen",
+        "Ansatz an einem Use Case zur Produktentwicklung demonstriert"
+      ]
+    }
+  ],
   "education": [
     {
-      "degree": "M.Sc. Data Science",
+      "degree": "M.Sc. Data Science and Advanced Analytics",
       "institution": "NOVA IMS",
       "location": "Lissabon, Portugal",
       "startDate": "2025",
       "endDate": "2027"
+    },
+    {
+      "degree": "B.Sc. Wirtschaftsinformatik",
+      "institution": "DHBW Stuttgart",
+      "location": "Stuttgart, Deutschland",
+      "startDate": "2022",
+      "endDate": "2025"
+    },
+    {
+      "degree": "B.A. Betriebswirtschaftslehre",
+      "institution": "DHBW Stuttgart",
+      "location": "Stuttgart, Deutschland",
+      "startDate": "2019",
+      "endDate": "2022"
     }
   ],
   "languages": [
     { "name": "Deutsch", "level": "Muttersprache" },
-    { "name": "Englisch", "level": "Fließend" },
+    { "name": "Englisch", "level": "Verhandlungssicher (C2)" },
     { "name": "Türkisch", "level": "Muttersprache" },
     { "name": "Portugiesisch", "level": "Grundkenntnisse" }
   ]

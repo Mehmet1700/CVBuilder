@@ -40,6 +40,7 @@ function applyCvOverrides(profile: Profile, cv: CvOverrides | undefined): Profil
     skills: cv.skills ?? profile.skills,
     experience: cv.experience ?? profile.experience,
     projects: cv.projects ?? profile.projects,
+    publications: cv.publications ?? profile.publications,
   };
 }
 
@@ -65,6 +66,9 @@ function cleanProfile(profile: Profile): Profile {
     projects: (profile.projects ?? [])
       .filter((entry) => hasText(entry.title))
       .map((entry) => ({ ...entry, bullets: stringList(entry.bullets ?? [], "projects[].bullets") })),
+    publications: (profile.publications ?? [])
+      .filter((entry) => hasText(entry.title))
+      .map((entry) => ({ ...entry, bullets: stringList(entry.bullets ?? [], "publications[].bullets") })),
     education: (profile.education ?? []).filter((entry) => hasText(entry.degree) || hasText(entry.institution)),
     languages: (profile.languages ?? []).filter((entry) => hasText(entry.name)),
   };
@@ -161,7 +165,7 @@ function validateRequest(request: BuildRequest): void {
     if (request.cv.summary !== undefined && typeof request.cv.summary !== "string") {
       throw new Error("cv.summary must be a string");
     }
-    for (const field of ["skills", "experience", "projects"] as const) {
+    for (const field of ["skills", "experience", "projects", "publications"] as const) {
       if (request.cv[field] !== undefined && !Array.isArray(request.cv[field])) {
         throw new Error(`cv.${field} must be an array`);
       }
