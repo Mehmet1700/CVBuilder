@@ -7,8 +7,9 @@ dist/
 output/*
 !output/.gitkeep
 
-# Personal photo (not committed)
+# Personal photo and fact pool (not committed)
 profile/photo.*
+profile/facts.md
 
 .DS_Store
 .claude/settings.local.json

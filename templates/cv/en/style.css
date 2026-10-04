@@ -30,14 +30,6 @@ h1, h2, h3 { margin: 0; font-weight: 600; }
   gap: 20px;
 }
 
-.header .photo {
-  width: 72px;
-  height: 72px;
-  border-radius: 50%;
-  object-fit: cover;
-  border: 2px solid rgba(255, 255, 255, 0.6);
-}
-
 .header h1 {
   font-size: 26pt;
   font-weight: 700;
@@ -51,19 +43,22 @@ h1, h2, h3 { margin: 0; font-weight: 600; }
   color: rgba(255, 255, 255, 0.85);
 }
 
+/* Main column comes first in the HTML so text extraction reads experience first; grid placement keeps the sidebar visually on the left. */
 .content {
-  display: flex;
-  align-items: stretch;
+  display: grid;
+  grid-template-columns: 36% 64%;
 }
 
 .sidebar {
-  width: 34%;
+  grid-column: 1;
+  grid-row: 1;
   background: #f4f5f9;
-  padding: 28px 24px;
+  padding: 28px 20px;
 }
 
 .main {
-  width: 66%;
+  grid-column: 2;
+  grid-row: 1;
   padding: 28px 32px;
 }
 
@@ -89,7 +84,7 @@ h1, h2, h3 { margin: 0; font-weight: 600; }
 .contact-list li {
   margin-bottom: 6px;
   word-break: break-word;
-  font-size: 9.5pt;
+  font-size: 9pt;
 }
 
 .skill-group { margin-bottom: 10px; }

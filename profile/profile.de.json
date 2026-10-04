@@ -3,14 +3,14 @@
   "title": "Data Scientist",
   "email": "mehmet.karaca.application@gmail.com",
   "phone": "",
-  "location": "Lisbon, Portugal",
+  "location": "Lissabon, Portugal",
   "linkedin": "",
   "github": "github.com/Mehmet1700",
   "photo": "./profile/photo.jpg",
   "summary": "",
   "skills": [
-    { "category": "Programming", "items": ["Python", "SQL", "R"] },
-    { "category": "ML/AI", "items": ["scikit-learn", "TensorFlow", "PyTorch"] },
+    { "category": "Programmierung", "items": ["Python", "SQL", "R"] },
+    { "category": "ML/KI", "items": ["scikit-learn", "TensorFlow", "PyTorch"] },
     { "category": "Tools", "items": ["Docker", "Git", "Spark"] }
   ],
   "experience": [
@@ -36,15 +36,15 @@
     {
       "degree": "M.Sc. Data Science",
       "institution": "NOVA IMS",
-      "location": "Lisbon, Portugal",
+      "location": "Lissabon, Portugal",
       "startDate": "2025",
       "endDate": "2027"
     }
   ],
   "languages": [
-    { "name": "German", "level": "Native" },
-    { "name": "English", "level": "Fluent" },
-    { "name": "Turkish", "level": "Native" },
-    { "name": "Portuguese", "level": "Basic" }
+    { "name": "Deutsch", "level": "Muttersprache" },
+    { "name": "Englisch", "level": "Fließend" },
+    { "name": "Türkisch", "level": "Muttersprache" },
+    { "name": "Portugiesisch", "level": "Grundkenntnisse" }
   ]
 }

@@ -7,7 +7,6 @@
 </head>
 <body>
   <header class="header">
-    {{#if photo}}<img class="photo" src="{{photo}}" alt="{{name}}" />{{/if}}
     <div class="header-text">
       <h1>{{name}}</h1>
       {{#if title}}<p class="title">{{title}}</p>{{/if}}
@@ -15,6 +14,55 @@
   </header>
 
   <div class="content">
+    <main class="main">
+      {{#if summary}}
+      <section class="block">
+        <h2>Summary</h2>
+        <p class="summary">{{summary}}</p>
+      </section>
+      {{/if}}
+
+      {{#if experience}}
+      <section class="block">
+        <h2>Experience</h2>
+        {{#each experience}}
+        <div class="exp-entry">
+          <div class="exp-header">
+            <h3>{{title}}</h3>
+            <span class="meta">{{startDate}} – {{endDate}}</span>
+          </div>
+          <p class="company">{{company}}{{#if location}}, {{location}}{{/if}}</p>
+          {{#if bullets}}
+          <ul>
+            {{#each bullets}}<li>{{this}}</li>{{/each}}
+          </ul>
+          {{/if}}
+        </div>
+        {{/each}}
+      </section>
+      {{/if}}
+
+      {{#if projects}}
+      <section class="block">
+        <h2>Projects</h2>
+        {{#each projects}}
+        <div class="exp-entry">
+          <div class="exp-header">
+            <h3>{{title}}</h3>
+            <span class="meta">{{date}}</span>
+          </div>
+          <p class="company">{{context}}{{#if link}} · {{link}}{{/if}}</p>
+          {{#if bullets}}
+          <ul>
+            {{#each bullets}}<li>{{this}}</li>{{/each}}
+          </ul>
+          {{/if}}
+        </div>
+        {{/each}}
+      </section>
+      {{/if}}
+    </main>
+
     <aside class="sidebar">
       <section class="block">
         <h2>Contact</h2>
@@ -63,35 +111,6 @@
       </section>
       {{/if}}
     </aside>
-
-    <main class="main">
-      {{#if summary}}
-      <section class="block">
-        <h2>Summary</h2>
-        <p class="summary">{{summary}}</p>
-      </section>
-      {{/if}}
-
-      {{#if experience}}
-      <section class="block">
-        <h2>Experience</h2>
-        {{#each experience}}
-        <div class="exp-entry">
-          <div class="exp-header">
-            <h3>{{title}}</h3>
-            <span class="meta">{{startDate}} – {{endDate}}</span>
-          </div>
-          <p class="company">{{company}}{{#if location}}, {{location}}{{/if}}</p>
-          {{#if bullets}}
-          <ul>
-            {{#each bullets}}<li>{{this}}</li>{{/each}}
-          </ul>
-          {{/if}}
-        </div>
-        {{/each}}
-      </section>
-      {{/if}}
-    </main>
   </div>
 </body>
 </html>

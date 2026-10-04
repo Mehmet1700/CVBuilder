@@ -3,7 +3,7 @@ import path from "node:path";
 import { fileURLToPath } from "node:url";
 import Handlebars from "handlebars";
 import puppeteer, { Browser } from "puppeteer";
-import type { BuildRequest, BuildResponse, Language, Profile } from "./types.js";
+import type { BuildRequest, BuildResponse, CvOverrides, Language, Profile } from "./types.js";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const ROOT_DIR = path.resolve(__dirname, "..");
@@ -23,11 +23,51 @@ const MIME_BY_EXT: Record<string, string> = {
   ".webp": "image/webp",
 };
 
-function loadProfile(): Profile {
-  if (!fs.existsSync(PROFILE_FILE)) {
+function loadProfile(language: Language): Profile {
+  const languageFile = path.join(PROFILE_DIR, `profile.${language}.json`);
+  const file = fs.existsSync(languageFile) ? languageFile : PROFILE_FILE;
+  if (!fs.existsSync(file)) {
     throw new Error(`Profile not found at ${PROFILE_FILE}. Fill in profile/profile.json first.`);
   }
-  return JSON.parse(fs.readFileSync(PROFILE_FILE, "utf-8"));
+  return JSON.parse(fs.readFileSync(file, "utf-8"));
+}
+
+function applyCvOverrides(profile: Profile, cv: CvOverrides | undefined): Profile {
+  if (!cv) return profile;
+  return {
+    ...profile,
+    summary: cv.summary ?? profile.summary,
+    skills: cv.skills ?? profile.skills,
+    experience: cv.experience ?? profile.experience,
+    projects: cv.projects ?? profile.projects,
+  };
+}
+
+function stringList(value: unknown, label: string): string[] {
+  if (!Array.isArray(value) || value.some((v) => typeof v !== "string")) {
+    throw new Error(`${label} must be an array of strings`);
+  }
+  return value.map((v: string) => v.trim()).filter(Boolean);
+}
+
+const hasText = (value: string | undefined): boolean => Boolean(value?.trim());
+
+// Drops blank placeholder entries (such as the empty ones in profile.json) so they never render.
+function cleanProfile(profile: Profile): Profile {
+  return {
+    ...profile,
+    skills: (profile.skills ?? [])
+      .map((group) => ({ category: group.category?.trim() ?? "", items: stringList(group.items, "skills[].items") }))
+      .filter((group) => group.category && group.items.length > 0),
+    experience: (profile.experience ?? [])
+      .filter((entry) => hasText(entry.title) || hasText(entry.company))
+      .map((entry) => ({ ...entry, bullets: stringList(entry.bullets ?? [], "experience[].bullets") })),
+    projects: (profile.projects ?? [])
+      .filter((entry) => hasText(entry.title))
+      .map((entry) => ({ ...entry, bullets: stringList(entry.bullets ?? [], "projects[].bullets") })),
+    education: (profile.education ?? []).filter((entry) => hasText(entry.degree) || hasText(entry.institution)),
+    languages: (profile.languages ?? []).filter((entry) => hasText(entry.name)),
+  };
 }
 
 function loadPhotoDataUri(photoRef: string | undefined): string | undefined {
@@ -55,6 +95,15 @@ function formatDate(language: Language, date: Date): string {
     month: "long",
     year: "numeric",
   }).format(date);
+}
+
+function buildSalutation(language: Language, hiringManager?: string): string {
+  const name = hiringManager?.trim();
+  if (language === "en") return name ? `Dear ${name},` : "Dear Hiring Manager,";
+  if (!name) return "Sehr geehrte Damen und Herren,";
+  if (/^Herr\b/.test(name)) return `Sehr geehrter ${name},`;
+  if (/^Frau\b/.test(name)) return `Sehr geehrte ${name},`;
+  return `Sehr geehrte/r ${name},`;
 }
 
 function slugify(value: string): string {
@@ -107,13 +156,24 @@ function validateRequest(request: BuildRequest): void {
   for (const field of ["opening", "body", "closing"] as const) {
     if (!request.coverLetter[field]) throw new Error(`Missing required field: coverLetter.${field}`);
   }
+  if (request.cv !== undefined) {
+    if (typeof request.cv !== "object" || request.cv === null) throw new Error("cv must be an object");
+    if (request.cv.summary !== undefined && typeof request.cv.summary !== "string") {
+      throw new Error("cv.summary must be a string");
+    }
+    for (const field of ["skills", "experience", "projects"] as const) {
+      if (request.cv[field] !== undefined && !Array.isArray(request.cv[field])) {
+        throw new Error(`cv.${field} must be an array`);
+      }
+    }
+  }
 }
 
 export async function buildDocuments(request: BuildRequest): Promise<BuildResponse> {
   validateRequest(request);
 
-  const profile = loadProfile();
-  const photo = loadPhotoDataUri(profile.photo);
+  const profile = cleanProfile(applyCvOverrides(loadProfile(request.language), request.cv));
+  const photo = request.language === "de" ? loadPhotoDataUri(profile.photo) : undefined;
   const today = new Date();
   const jobFolder = slugify(request.jobId);
   const nameSlug = profile.name.trim().replace(/\s+/g, "_");
@@ -122,10 +182,9 @@ export async function buildDocuments(request: BuildRequest): Promise<BuildRespon
 
   const coverLetterHtml = renderTemplate("cover-letter", request.language, {
     ...profile,
-    photo,
     company: request.company,
     position: request.position,
-    hiringManager: request.hiringManager,
+    salutation: buildSalutation(request.language, request.hiringManager),
     date: formatDate(request.language, today),
     opening_paragraph: request.coverLetter.opening,
     body_paragraph: request.coverLetter.body,

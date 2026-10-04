@@ -14,6 +14,14 @@ export interface ExperienceEntry {
   bullets: string[];
 }
 
+export interface ProjectEntry {
+  title: string;
+  context: string;
+  date: string;
+  link?: string;
+  bullets: string[];
+}
+
 export interface EducationEntry {
   degree: string;
   institution: string;
@@ -39,8 +47,16 @@ export interface Profile {
   summary: string;
   skills: SkillGroup[];
   experience: ExperienceEntry[];
+  projects: ProjectEntry[];
   education: EducationEntry[];
   languages: LanguageEntry[];
+}
+
+export interface CvOverrides {
+  summary?: string;
+  skills?: SkillGroup[];
+  experience?: ExperienceEntry[];
+  projects?: ProjectEntry[];
 }
 
 export interface CoverLetterText {
@@ -56,6 +72,7 @@ export interface BuildRequest {
   hiringManager?: string;
   language: Language;
   coverLetter: CoverLetterText;
+  cv?: CvOverrides;
 }
 
 export interface BuildResponse {

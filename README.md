@@ -1,17 +1,19 @@
 # CV Builder
 
-A local PDF generation engine for job applications. It takes your static profile data plus
-per-job details (company, position, cover letter text, language) and produces a matching CV and
-cover letter as print-ready A4 PDFs — no AI, no database, just Handlebars templates rendered
-through headless Chrome (Puppeteer).
+A local PDF generation engine for job applications. It takes your profile data plus per-job
+details (company, position, cover letter text, language, optional CV tailoring) and produces a
+matching CV and cover letter as print-ready A4 PDFs. The engine itself uses no AI and no
+database: it renders Handlebars templates through headless Chrome (Puppeteer). An optional LLM
+prompt for writing the text is included (see below).
 
 ## How it works
 
-1. You fill in `profile/profile.json` once with your personal data (name, contact info, skills,
-   experience, education, languages).
-2. For each job you apply to, you call `POST /api/build` with the job-specific details (company,
-   position, hiring manager, language, and the three cover letter paragraphs).
-3. The server renders your profile + job data through the fixed templates in `templates/`,
+1. You fill in the profile files in `profile/` once (name, contact info, skills, experience,
+   projects, education, languages).
+2. For each job you apply to, you call `POST /api/build` with the job-specific details: company,
+   position, hiring manager, language, the three cover letter paragraphs and, optionally, a CV
+   tailored to the posting.
+3. The server renders your profile and the job data through the fixed templates in `templates/`,
    converts them to PDF, and writes them to `output/{jobId}/`.
 
 ## Project structure
@@ -20,18 +22,22 @@ through headless Chrome (Puppeteer).
 CVBuilder/
 ├── templates/
 │   ├── cv/
-│   │   ├── de/            # German CV template (template.html + style.css)
-│   │   └── en/            # English CV template
+│   │   ├── de/             # German CV template (template.html + style.css)
+│   │   └── en/             # English CV template
 │   └── cover-letter/
-│       ├── de/            # German cover letter (DIN 5008 style)
+│       ├── de/             # German cover letter (DIN 5008 style)
 │       └── en/             # English cover letter
 ├── profile/
-│   ├── profile.json       # Your static personal data (fill in once)
-│   └── photo.jpg          # Optional profile photo (gitignored — add your own)
+│   ├── profile.json        # Your data in English (also the fallback for any language)
+│   ├── profile.de.json     # Your data in German, used for German applications
+│   ├── photo.jpg           # Optional profile photo (gitignored, add your own)
+│   └── facts.md            # Optional fact pool for the LLM prompt (gitignored)
+├── prompts/
+│   └── application.md      # LLM prompt that writes the letter and tailors the CV as /api/build JSON
 ├── output/                 # Generated PDFs land here, one folder per job (gitignored)
 ├── src/
 │   ├── server.ts           # Express API
-│   ├── builder.ts          # Core: profile + job JSON → rendered PDF via Puppeteer
+│   ├── builder.ts          # Core: profile + job JSON, rendered to PDF via Puppeteer
 │   └── types.ts
 ├── package.json
 └── README.md
@@ -49,7 +55,7 @@ Puppeteer downloads a bundled Chromium on first install.
 
 ### Fill in your profile
 
-Edit `profile/profile.json`:
+Edit `profile/profile.json` (English) and `profile/profile.de.json` (German):
 
 ```json
 {
@@ -75,20 +81,35 @@ Edit `profile/profile.json`:
       "bullets": ["", "", ""]
     }
   ],
+  "projects": [
+    {
+      "title": "",
+      "context": "",
+      "date": "",
+      "link": "",
+      "bullets": ["", ""]
+    }
+  ],
   "education": [ ... ],
   "languages": [ ... ]
 }
 ```
 
 Notes:
+- **Languages:** a German application uses `profile.de.json` if it exists, so the German CV shows
+  German skill categories, language names and levels. Any other language uses `profile.json`. If
+  `profile.de.json` is missing, `profile.json` is used for everything.
 - `skills` is grouped by category (each group renders as its own block in the sidebar).
-- `experience` and `education` are arrays — add as many entries as you need. An entry with only
-  empty strings still renders as a (blank) block, so remove the placeholder entry or fill it in
-  before generating a real application.
-- `photo` should point at an image file relative to the project root. If the file doesn't exist,
-  the templates simply omit the photo — it's optional.
-- `photo.jpg` is gitignored, since it's personal data. Add your own file at that path; it never
-  gets committed.
+- `experience`, `projects` and `education` are arrays, so add as many entries as you need. Blank
+  entries (such as the empty placeholders above) are dropped automatically, and a section with no
+  entries is hidden.
+- `photo` points at an image file relative to the project root. The photo appears on the German CV
+  only, in the top right. The English CV never shows a photo. If the file doesn't exist, the
+  photo is simply omitted.
+- `photo.jpg` is gitignored, since it's personal data. Add your own file at that path.
+- The German template crops the photo to head and shoulders with `object-view-box` in
+  `templates/cv/de/style.css`. If your photo is framed differently, adjust that line; the
+  original file is never modified.
 
 ## Development
 
@@ -128,14 +149,29 @@ Request body:
     "opening": "...",
     "body": "...",
     "closing": "..."
+  },
+  "cv": {
+    "summary": "...",
+    "skills": [{ "category": "Programmierung", "items": ["Python", "SQL"] }],
+    "experience": [],
+    "projects": []
   }
 }
 ```
 
-- `language` is `"de"` or `"en"` and selects which template set to render.
-- `hiringManager` is optional — the German template falls back to "Sehr geehrte Damen und
-  Herren," and the English one to "Dear Hiring Manager," if omitted.
+- `language` is `"de"` or `"en"` and selects the template set and the profile file.
+- `hiringManager` is optional. If omitted, the German letter opens with "Sehr geehrte Damen und
+  Herren," and the English one with "Dear Hiring Manager,". In German, pass it with the form of
+  address: `"Frau Dr. Schmidt"` gives "Sehr geehrte Frau Dr. Schmidt,", `"Herr Müller"` gives
+  "Sehr geehrter Herr Müller,", and a bare `"Dr. Weber"` gives "Sehr geehrte/r Dr. Weber,".
+- `cv` is optional and tailors the CV to one job. Each key is optional and replaces the matching
+  section from the profile: `summary` (string), `skills`, `experience` and `projects` (arrays with
+  the same entry shape as in the profile files). An empty array hides that section. Name, contact
+  details, education and languages always come from the profile.
+- Any extra keys in the body (for example the `report` and `facts` the LLM prompt returns) are
+  ignored.
 - `jobId` is used as the output folder name; it's sanitized to safe filename characters.
+- Invalid input returns HTTP 400 with `{ "error": "..." }`.
 
 Response:
 
@@ -161,9 +197,9 @@ curl -X POST http://localhost:3010/api/build \
     "hiringManager": "Dr. Müller",
     "language": "de",
     "coverLetter": {
-      "opening": "mit großem Interesse habe ich Ihre Stellenanzeige gelesen.",
-      "body": "In meinem Masterstudium habe ich fundierte Kenntnisse in Python und SQL erworben.",
-      "closing": "Über die Einladung zu einem persönlichen Gespräch würde ich mich sehr freuen."
+      "opening": "ich möchte bei Siemens an der Prognose von Energiedaten arbeiten.",
+      "body": "In meinem Masterstudium habe ich Prognosemodelle mit Python und SQL gebaut.",
+      "closing": "Über ein Gespräch, in dem ich die Projekte zeige, würde ich mich freuen."
     }
   }'
 ```
@@ -179,8 +215,24 @@ output/
 
 Each call to `/api/build` creates (or overwrites) one folder per `jobId`, containing both PDFs.
 
+## Page limits
+
+Both documents are meant to fit one A4 page, and anything longer is not trimmed for you:
+
+- **Cover letter:** overflows at about 2,300 characters of text in total.
+- **CV:** with two-line bullets, 3 entries with 9 bullets or 4 entries with 8 bullets fit
+  (entries are experience and projects together). A longer CV continues on a second page.
+
+## Writing the text with an LLM
+
+`prompts/application.md` contains a ready-to-use prompt for DeepSeek (or any chat model). Give it a
+job posting and your fact pool, and it returns the exact JSON body for `POST /api/build`: the
+three letter paragraphs and a CV tailored to the posting. It also returns a short report with
+matched requirements, gaps and things to verify before sending. The prompt enforces the page
+limits above, and every CV entry cites the facts it was built from so you can check each claim.
+
 ## Editing the design
 
-Each language has its own fixed template — edit the `template.html` / `style.css` pair under
+Each language has its own fixed template. Edit the `template.html` and `style.css` pair under
 `templates/cv/{de,en}/` or `templates/cover-letter/{de,en}/` to change the design. Changes apply
-immediately on the next `/api/build` call, no restart needed.
+on the next `/api/build` call, no restart needed.
