@@ -62,6 +62,26 @@
         {{/each}}
       </section>
       {{/if}}
+
+      {{#if publications}}
+      <section class="block">
+        <h2>Veröffentlichungen</h2>
+        {{#each publications}}
+        <div class="exp-entry">
+          <div class="exp-header">
+            <h3>{{title}}</h3>
+            <span class="meta">{{date}}</span>
+          </div>
+          <p class="company">{{venue}}{{#if link}} · {{link}}{{/if}}</p>
+          {{#if bullets}}
+          <ul>
+            {{#each bullets}}<li>{{this}}</li>{{/each}}
+          </ul>
+          {{/if}}
+        </div>
+        {{/each}}
+      </section>
+      {{/if}}
     </main>
 
     <aside class="sidebar">

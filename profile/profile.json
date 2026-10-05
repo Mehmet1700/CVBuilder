@@ -4,23 +4,47 @@
   "email": "mehmet.karaca.application@gmail.com",
   "phone": "",
   "location": "Lisbon, Portugal",
-  "linkedin": "",
+  "linkedin": "linkedin.com/in/karaca-mehmet",
   "github": "github.com/Mehmet1700",
   "photo": "./profile/photo.jpg",
   "summary": "",
   "skills": [
-    { "category": "Programming", "items": ["Python", "SQL", "R"] },
-    { "category": "ML/AI", "items": ["scikit-learn", "TensorFlow", "PyTorch"] },
-    { "category": "Tools", "items": ["Docker", "Git", "Spark"] }
+    { "category": "Programming", "items": ["Python", "SQL", "R", "Java", "JavaScript"] },
+    { "category": "ML/AI", "items": ["scikit-learn", "TensorFlow", "PyTorch", "Azure ML", "Computer Vision", "LLMs"] },
+    { "category": "Data & Tools", "items": ["Pandas", "Apache Spark", "Apache Hadoop", "Power BI", "Docker", "Git", "n8n"] },
+    { "category": "Web & Cloud", "items": ["React.js", "Node.js", "Microsoft Azure", "Power Apps"] }
   ],
   "experience": [
     {
-      "title": "",
-      "company": "",
-      "location": "",
-      "startDate": "",
-      "endDate": "",
-      "bullets": ["", "", ""]
+      "title": "Working Student, Strategy & Innovation",
+      "company": "Deutsche Bundesbank",
+      "location": "Frankfurt am Main",
+      "startDate": "08/2026",
+      "endDate": "Present",
+      "bullets": []
+    },
+    {
+      "title": "Corporate Student, Business Informatics (Data Science)",
+      "company": "TRUMPF SE + Co. KG",
+      "location": "Ditzingen",
+      "startDate": "09/2022",
+      "endDate": "09/2025",
+      "bullets": [
+        "Applied machine learning to optimize power-saving shutdown processes in machine tool development",
+        "Developed computer vision algorithms to optimize laser cutting parameters from image data",
+        "Advised on highly automated production environments in the Smart Factory Consulting team"
+      ]
+    },
+    {
+      "title": "Corporate Student, Business Administration (Financial Services)",
+      "company": "w&w Gruppe",
+      "location": "Ludwigsburg",
+      "startDate": "10/2019",
+      "endDate": "09/2022",
+      "bullets": [
+        "Prepared decision documents and presentations for the Executive Board",
+        "Analyzed and processed data in the Data Lake and Fund Decomposition projects"
+      ]
     }
   ],
   "projects": [
@@ -32,18 +56,52 @@
       "bullets": ["", ""]
     }
   ],
+  "publications": [
+    {
+      "title": "Effects of design decisions on sustainability in product development: a case study for machine tools",
+      "venue": "Proceedings of the Design Society, Volume 6 (DESIGN 2026), Cambridge University Press",
+      "date": "07/2026",
+      "link": "",
+      "bullets": []
+    },
+    {
+      "title": "Leveraging LLM and GAN for Synthetic Data Generation: A Novel Architecture for Market Research",
+      "venue": "EU4Dual Annual Conference 2025, Abstract Book",
+      "date": "04/2025",
+      "link": "",
+      "bullets": [
+        "Developed an architecture with two LLMs that generates customer personas and derives their preferences",
+        "Trained a CTGAN model on the synthetic data to produce market research datasets",
+        "Demonstrated the approach in a new product development use case"
+      ]
+    }
+  ],
   "education": [
     {
-      "degree": "M.Sc. Data Science",
+      "degree": "M.Sc. Data Science and Advanced Analytics",
       "institution": "NOVA IMS",
       "location": "Lisbon, Portugal",
       "startDate": "2025",
       "endDate": "2027"
+    },
+    {
+      "degree": "B.Sc. Business Informatics",
+      "institution": "DHBW Stuttgart",
+      "location": "Stuttgart, Germany",
+      "startDate": "2022",
+      "endDate": "2025"
+    },
+    {
+      "degree": "B.A. Business Administration",
+      "institution": "DHBW Stuttgart",
+      "location": "Stuttgart, Germany",
+      "startDate": "2019",
+      "endDate": "2022"
     }
   ],
   "languages": [
     { "name": "German", "level": "Native" },
-    { "name": "English", "level": "Fluent" },
+    { "name": "English", "level": "Fluent (C2)" },
     { "name": "Turkish", "level": "Native" },
     { "name": "Portuguese", "level": "Basic" }
   ]

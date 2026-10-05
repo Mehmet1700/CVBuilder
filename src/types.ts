@@ -22,6 +22,14 @@ export interface ProjectEntry {
   bullets: string[];
 }
 
+export interface PublicationEntry {
+  title: string;
+  venue: string;
+  date: string;
+  link?: string;
+  bullets?: string[];
+}
+
 export interface EducationEntry {
   degree: string;
   institution: string;
@@ -48,6 +56,7 @@ export interface Profile {
   skills: SkillGroup[];
   experience: ExperienceEntry[];
   projects: ProjectEntry[];
+  publications: PublicationEntry[];
   education: EducationEntry[];
   languages: LanguageEntry[];
 }
@@ -57,6 +66,7 @@ export interface CvOverrides {
   skills?: SkillGroup[];
   experience?: ExperienceEntry[];
   projects?: ProjectEntry[];
+  publications?: PublicationEntry[];
 }
 
 export interface CoverLetterText {

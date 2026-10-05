@@ -90,6 +90,15 @@ Edit `profile/profile.json` (English) and `profile/profile.de.json` (German):
       "bullets": ["", ""]
     }
   ],
+  "publications": [
+    {
+      "title": "",
+      "venue": "",
+      "date": "",
+      "link": "",
+      "bullets": []
+    }
+  ],
   "education": [ ... ],
   "languages": [ ... ]
 }
@@ -100,7 +109,7 @@ Notes:
   German skill categories, language names and levels. Any other language uses `profile.json`. If
   `profile.de.json` is missing, `profile.json` is used for everything.
 - `skills` is grouped by category (each group renders as its own block in the sidebar).
-- `experience`, `projects` and `education` are arrays, so add as many entries as you need. Blank
+- `experience`, `projects`, `publications` and `education` are arrays, so add as many entries as you need. Blank
   entries (such as the empty placeholders above) are dropped automatically, and a section with no
   entries is hidden.
 - `photo` points at an image file relative to the project root. The photo appears on the German CV
@@ -154,7 +163,8 @@ Request body:
     "summary": "...",
     "skills": [{ "category": "Programmierung", "items": ["Python", "SQL"] }],
     "experience": [],
-    "projects": []
+    "projects": [],
+    "publications": []
   }
 }
 ```
@@ -165,8 +175,8 @@ Request body:
   address: `"Frau Dr. Schmidt"` gives "Sehr geehrte Frau Dr. Schmidt,", `"Herr Müller"` gives
   "Sehr geehrter Herr Müller,", and a bare `"Dr. Weber"` gives "Sehr geehrte/r Dr. Weber,".
 - `cv` is optional and tailors the CV to one job. Each key is optional and replaces the matching
-  section from the profile: `summary` (string), `skills`, `experience` and `projects` (arrays with
-  the same entry shape as in the profile files). An empty array hides that section. Name, contact
+  section from the profile: `summary` (string), `skills`, `experience`, `projects` and `publications`
+  (arrays with the same entry shape as in the profile files). An empty array hides that section. Name, contact
   details, education and languages always come from the profile.
 - Any extra keys in the body (for example the `report` and `facts` the LLM prompt returns) are
   ignored.
@@ -220,8 +230,10 @@ Each call to `/api/build` creates (or overwrites) one folder per `jobId`, contai
 Both documents are meant to fit one A4 page, and anything longer is not trimmed for you:
 
 - **Cover letter:** overflows at about 2,300 characters of text in total.
-- **CV:** with two-line bullets, 3 entries with 9 bullets or 4 entries with 8 bullets fit
-  (entries are experience and projects together). A longer CV continues on a second page.
+- **CV:** count 3 points per experience or project entry, 4 per publication and 2 per two-line
+  bullet. Up to 27 points fits one page (measured with a two-line summary); 30 or more
+  overflows. The sidebar fits 4 skill groups of up to 8 items. A longer CV continues on a second
+  page.
 
 ## Writing the text with an LLM
 

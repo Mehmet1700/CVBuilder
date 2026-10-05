@@ -1,7 +1,8 @@
 # Application text prompt (DeepSeek)
 
 Turns a job posting plus your facts into the JSON body for `POST /api/build`: the three cover
-letter paragraphs and a CV tailored to the posting (summary, skills, experience, projects).
+letter paragraphs and a CV tailored to the posting (summary, skills, experience, projects,
+publications).
 
 The engine renders both documents in fixed templates. Name, contact details, education and
 languages always come from the profile files, so the model never writes those. It also never
@@ -27,10 +28,16 @@ writes the subject line, salutation, closing phrase or date of the letter; the t
 ```
 F1 | job | <job title, employer, location, start and end as MM/YYYY or "present", what you did, tools, result with a real number if you have one>
 F2 | project | <project title, context (course, thesis, personal), year, link if any, what you built, tools, result with a real number if you have one>
-F3 | achievement | <...>
-F4 | course | <relevant coursework or thesis topic>
-F5 | motivation | <a real reason you want this kind of work, in your own words>
+F3 | achievement | <a result or task, with the employer or project it belongs to>
+F4 | publication | <title as published, venue, month and year, coauthors if known>
+F5 | certification | <name, issuer, month and year>
+F6 | volunteering | <role, organization, location, start and end>
+F7 | education | <degree, institution, dates, relevant coursework or thesis topic>
+F8 | motivation | <a real reason you want this kind of work, in your own words>
 ```
+
+Other types (`skill`, `language`, `other`) work the same way. If a title should read differently
+in German, add it in the line as `(de: ...)`; the model uses it for German output.
 
 - One fact per line, with a stable ID. The model cites the IDs in `report` and on every CV entry,
   so you can check each claim against its source.
@@ -50,7 +57,7 @@ TODAY, LANGUAGE, HIRING MANAGER (optional), AVAILABILITY (optional), COMPANY NOT
 
 TRUTH RULES
 1. Use only PROFILE and FACTS. Never invent employers, titles, dates, tools, numbers, results or motivations.
-2. Titles, employers, locations, dates and links are copied exactly from FACTS. Do not turn a project into a job or a course into work experience. Do not claim sole credit for team work: say what you personally did.
+2. Titles, employers, locations, dates and links are copied exactly from FACTS (for German output use the title given after "de:" when FACTS has one). Do not turn a project into a job or a course into work experience. Do not claim sole credit for team work: say what you personally did.
 3. If the posting asks for something the facts do not cover, do not claim it. Leave it out, or name the closest real experience and state exactly what it was.
 4. Facts about the company come only from the JOB POSTING and COMPANY NOTES. You have no internet access. Never use news, products, figures or values from memory.
 5. A number may appear only if that exact number is in FACTS.
@@ -72,13 +79,15 @@ The template already prints the subject line, the salutation, the closing phrase
 STEP 3: TAILOR THE CV
 Output only the "cv" parts below. Name, contact details, education and languages come from the profile files and are not yours to write.
 - summary: at most 2 lines, about 120 characters, tailored to this role and built only from facts. Use "" if you cannot write one that is specific and true. No generic buzzwords.
-- skills: 3 to 5 groups, at most 8 items per group, most relevant group first. Only skills that appear in PROFILE or FACTS and matter for this posting. Use the posting's exact spelling for a tool where it matches a real skill (PyTorch, scikit-learn, PostgreSQL). Category names in the output language.
+- skills: 3 to 4 groups, at most 8 items per group, most relevant group first. Only skills that appear in PROFILE or FACTS and matter for this posting. Use the posting's exact spelling for a tool where it matches a real skill (PyTorch, scikit-learn, PostgreSQL). Category names in the output language.
 - experience: jobs from FACTS, reverse chronological. Fields: title, company, location, startDate, endDate, bullets. Dates as MM/YYYY; endDate "heute" (de) or "Present" (en) for a current job.
 - projects: the projects from FACTS that fit the posting best, most relevant first. Fields: title, context (for example "University project, NOVA IMS"), date (a year or MM/YYYY), link (only if FACTS has one, else ""), bullets.
-- Page budget, because the CV must fit one page: at most 4 entries in total (experience and projects together), 2 or 3 bullets each, at most 9 bullets in total. Every bullet at most 110 characters, which is two lines. An empty list is fine when nothing fits.
+- publications: the facts of type publication that fit the posting, most relevant first. Fields: title (exactly as published), venue (as written in FACTS), date (MM/YYYY), link (only if FACTS has one, else ""), bullets (0 to 2, only if FACTS describes the work; the bullets may come from the project fact behind the publication). Use the word "abstract" or "paper" exactly as FACTS does. A publication that matches the posting's field is always included; when space is tight, drop job bullets first.
+- Facts of type certification and volunteering can support the letter. The CV has no section for them.
+- Page budget, because the CV must fit one page. Count 3 points for every experience or project entry, 4 for every publication, and 2 for every bullet. The total must be at most 27. Examples that fit: 2 jobs with 2 bullets each, 1 project with 2 bullets and 1 publication with 1 bullet; or 3 jobs with 2 bullets each and 1 publication with 1 bullet. Every bullet at most 110 characters, which is two lines. An empty list is fine when nothing fits.
 - Bullet formula: strong action verb, what you did, the tools, and the measurable result (only if the number is in FACTS). Past tense for finished work, present tense for current work. One idea per bullet.
 - Mirror the posting's exact terms where they truthfully apply. No keyword stuffing.
-- Every experience and project entry carries "facts": the IDs of the facts it is built from.
+- Every experience, project and publication entry carries "facts": the IDs of the facts it is built from.
 
 LANGUAGE
 If LANGUAGE is "de" or "en", use it. If it is "auto": German postings get "de", everything else gets "en" (only these two templates exist, so a Portuguese posting gets "en"). Write the letter and all CV text in that language.
@@ -113,21 +122,22 @@ Return one JSON object and nothing else (no code fences, no commentary). Keys in
     "summary": "...",
     "skills": [{"category": "...", "items": ["..."]}],
     "experience": [{"title": "...", "company": "...", "location": "...", "startDate": "...", "endDate": "...", "bullets": ["..."], "facts": ["F1"]}],
-    "projects": [{"title": "...", "context": "...", "date": "...", "link": "...", "bullets": ["..."], "facts": ["F2"]}]
+    "projects": [{"title": "...", "context": "...", "date": "...", "link": "...", "bullets": ["..."], "facts": ["F2"]}],
+    "publications": [{"title": "...", "venue": "...", "date": "...", "link": "...", "bullets": ["..."], "facts": ["F3"]}]
   }
 }
 Field rules:
 - jobId: TODAY (YYYY-MM-DD), underscore, company, underscore, position. ASCII only, words joined without spaces, umlauts transliterated (ä ae, ö oe, ü ue, ß ss), no punctuation, no legal form. Example: 2026-10-04_Siemens_DataScientist
 - company: as written in the posting, with the legal form (GmbH, AG) if it is given.
 - position: the job title from the posting without (m/w/d), (f/m/x), location or reference number. It must read correctly after "Bewerbung als" (de) or "Application for" (en), so use the person form where needed: "Praktikant Data Science", not "Praktikum Data Science".
-- hiringManager: the contact person only if the posting or the user names one, otherwise "". German: with Herr or Frau and the academic title, for example "Frau Dr. Schmidt". If the gender is not clear, give the title and surname only ("Dr. Schmidt"), or "" if there is no title. English: "Ms. Schmidt", "Mr. Schmidt", "Dr. Schmidt", or the full name if the gender is unclear.
+- hiringManager: the contact person only if the posting or the user names one, otherwise "". German: with Herr or Frau and the academic title, for example "Frau Dr. Schmidt". If the gender is not clear, give the title and surname only ("Dr. Schmidt"), or "" if there is no title. English: "Ms. Schmidt", "Mr. Schmidt", "Dr. Schmidt", or the full name if the gender is unclear. A CEO, founder or other executive who is only listed in the company information is not a contact person: leave hiringManager "" and say so in verify_before_sending.
 - verify_before_sending: everything the human must check, for example a fact you had to stretch, a start date, the spelling of a name, a company detail that is only implied.
 
 CHECK BEFORE ANSWERING (fix silently, then check again)
 1. Company, position and contact person match the posting. The three letter fields contain no greeting, subject, sign-off or name.
 2. Every claim, tool and number is in PROFILE or FACTS. Every "covered" requirement cites fact IDs, and every CV entry lists its "facts".
 3. The company detail is from the posting or COMPANY NOTES, or its source is "none".
-4. The letter is at most 1,900 characters in total. The CV has at most 4 entries and 9 bullets, every bullet at most 110 characters, the summary about 120 characters.
+4. The letter is at most 1,900 characters in total. The CV is within 27 points (3 per experience or project entry, 4 per publication, 2 per bullet), every bullet is at most 110 characters, the summary is about 120 characters, and every publication that matches the posting is included.
 5. The facts that carry the letter body also appear in the CV.
 6. No banned phrase, no em or en dash, no markdown, in the letter and in the CV text.
 7. German only: formal Sie, and the first word of "opening" follows the lowercase rule.
@@ -166,8 +176,11 @@ Both budgets were measured against the real templates, not guessed.
   of normal prose, fewer when the text is full of long German compounds). The prompt caps it at
   1,900 characters to leave room for long company or position names that wrap.
 - **CV main column:** bullets wrap at roughly 60 characters per line, so a 110 character bullet is
-  two lines. With two-line bullets, 3 entries with 9 bullets or 4 entries with 8 bullets fit on
-  one page; 5 entries or 12 bullets overflow. The sidebar is not the bottleneck: it holds at
-  least 5 skill groups of 8 items.
+  two lines. A publication takes more room than a job (a long title plus a venue line), so the
+  budget is counted in points: 3 per experience or project entry, 4 per publication, 2 per
+  bullet. Measured with a two-line summary and worst-case long German titles, up to 27 points
+  fits one page in both languages, 28 and 29 are borderline, and 30 or more overflows. The sidebar
+  also has a limit: with three degrees and four languages in the profile it holds 4 skill groups
+  of 8 items, and 5 groups overflow.
 - A CV that overflows continues on a second page without a top margin, so the prompt keeps it to
   one page instead of relying on page two.
